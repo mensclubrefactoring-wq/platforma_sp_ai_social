@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "user": {
+      "title": "Профиль пользователя",
+      "description": "Данные компании или социального предпринимателя",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["business", "entrepreneur", "moderator"] },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "contactEmail": { "type": "string" },
+        "socialImpact": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "name"]
+    },
+    "task": {
+      "title": "Социальная задача",
+      "description": "Проект от крупного бизнеса",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "budget": { "type": "string" },
+        "deadline": { "type": "string" },
+        "location": { "type": "string" },
+        "category": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "active", "reviewing", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "description", "creatorId", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "Коллекция пользователей"
+    },
+    "/tasks/{taskId}": {
+      "schema": "task",
+      "description": "Коллекция социальных задач"
+    }
+  }
+}

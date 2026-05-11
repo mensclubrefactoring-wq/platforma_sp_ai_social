@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function getUserData(userId) { return get(/databases/$(database)/documents/users/$(userId)).data; }
+    function isBusiness() { return isSignedIn() && getUserData(request.auth.uid).role == 'business'; }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isOwner(userId) && (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'description', 'contactEmail', 'socialImpact'])
+      );
+    }
+
+    // Tasks Collection
+    match /tasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isBusiness() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.creatorId == request.auth.uid;
+    }
+  }
+}
