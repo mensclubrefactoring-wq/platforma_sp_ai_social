@@ -1,0 +1,1 @@
+# platforma_sp_ai_social
