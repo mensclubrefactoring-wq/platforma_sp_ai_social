@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 	"platforma-sp/internal/shared"
 	"github.com/golang-jwt/jwt/v5"
@@ -55,6 +56,32 @@ func main() {
 		
 		token, _ := createToken(req)
 		json.NewEncoder(w).Encode(map[string]interface{}{"token": token, "user": req})
+	})
+
+	http.HandleFunc("/auth/me", func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Unauthorized", 401)
+			return
+		}
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+		claims := &shared.Claims{}
+		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+			return shared.JWT_SECRET, nil
+		})
+		if err != nil || !token.Valid {
+			http.Error(w, "Invalid token", 401)
+			return
+		}
+
+		db := getDB()
+		for _, u := range db.Users {
+			if u.ID == claims.UserID {
+				json.NewEncoder(w).Encode(u)
+				return
+			}
+		}
+		http.Error(w, "User not found", 404)
 	})
 
 	http.HandleFunc("/auth/login", func(w http.ResponseWriter, r *http.Request) {
