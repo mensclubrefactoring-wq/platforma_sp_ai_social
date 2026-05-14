@@ -11,15 +11,32 @@ interface Message {
 }
 
 export default function Assistant() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "Здравствуйте! Я ваш AI-ассистент платформы Platforma SP. Я помогу вам сформулировать социальную задачу для бизнеса так, чтобы она была понятна социальным предпринимателям. Что вы планируете реализовать?"
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const history = await apiFetch("/api/ai/history");
+        if (history && history.length > 0) {
+          setMessages(history.map((m: any) => ({
+            role: m.role,
+            content: m.content
+          })));
+        } else {
+          setMessages([{
+            role: "assistant",
+            content: "Здравствуйте! Я ваш AI-ассистент платформы Platforma SP. Я помогу вам сформулировать социальную задачу для бизнеса так, чтобы она была понятна социальным предпринимателям. Что вы планируете реализовать?"
+          }]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch AI history", err);
+      }
+    };
+    fetchHistory();
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {

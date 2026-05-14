@@ -9,28 +9,41 @@ import (
 var JWT_SECRET = []byte(getEnv("JWT_SECRET", "platforma-sp-secret-key-2026"))
 
 type User struct {
-	ID       string `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password,omitempty"`
-	Name     string `json:"name"`
-	Role     string `json:"role"`
+	ID           uint      `json:"id" gorm:"primaryKey"`
+	Email         string    `json:"email" gorm:"uniqueIndex"`
+	Password      string    `json:"password,omitempty"`
+	Phone         string    `json:"phone"`
+	Name          string    `json:"name"`
+	Role          string    `json:"role"` // business, entrepreneur, admin
+	ConsentGiven  bool      `json:"consentGiven"`
+	PortfolioURL  string    `json:"portfolioUrl"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
 }
 
 type Task struct {
-	ID          string    `json:"id"`
+	ID          uint      `json:"id" gorm:"primaryKey"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Budget      string    `json:"budget"`
 	Deadline    string    `json:"deadline"`
 	Location    string    `json:"location"`
 	Category    string    `json:"category"`
-	CreatorID   string    `json:"creatorId"`
-	Status      string    `json:"status"`
+	CreatorID   uint      `json:"creatorId"`
+	Status      string    `json:"status"` // active, closed
 	CreatedAt   time.Time `json:"createdAt"`
 }
 
+type AIChatMessage struct {
+	ID        uint      `json:"id" gorm:"primaryKey"`
+	UserID    uint      `json:"userId"`
+	Role      string    `json:"role"` // user, assistant
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
 type Claims struct {
-	UserID string `json:"id"`
+	UserID uint   `json:"id"`
 	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }

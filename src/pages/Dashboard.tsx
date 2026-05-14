@@ -20,29 +20,51 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("Все");
+
+  const fetchTasks = async (search = "", category = "Все") => {
+    setLoading(true);
+    try {
+      const query = new URLSearchParams();
+      if (search) query.append("search", search);
+      if (category !== "Все") query.append("category", category);
+      
+      const t = await apiFetch(`/api/tasks?${query.toString()}`);
+      setTasks(t);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const u = await apiFetch("/api/auth/me");
         setUser(u);
-        const t = await apiFetch("/api/tasks");
-        setTasks(t);
+        fetchTasks();
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();
   }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchTasks(searchTerm, categoryFilter);
+  };
+
+  const categories = ["Все", "Экология", "Образование", "Социальное жилье", "Обучение ИТ", "Помощь пожилым", "Инклюзивность"];
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 italic serif">Рабочий стол {user?.role === 'business' ? 'компании' : 'партнера'}</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 serif">Рабочий стол {user?.role === 'business' ? 'компании' : 'партнера'}</h1>
           <p className="text-gray-500 mt-1">Управляйте социальными задачами и находите партнеров.</p>
         </div>
         <div className="flex gap-3">
@@ -81,20 +103,40 @@ export default function Dashboard() {
       <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-indigo-50/50 overflow-hidden">
         <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-white">
           <div className="flex items-center gap-6">
-            <h2 className="font-bold text-xl italic serif">Маркетплейс задач</h2>
-            <div className="flex bg-gray-50 p-1.5 rounded-xl">
-              <button className="px-4 py-1.5 text-xs font-bold bg-white shadow-sm border border-gray-200 rounded-lg">Все</button>
-              <button className="px-4 py-1.5 text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors">Мои</button>
+            <h2 className="font-bold text-xl serif">Маркетплейс задач</h2>
+            <div className="flex bg-gray-50 p-1.5 rounded-xl overflow-x-auto max-w-[500px] hide-scrollbar">
+              {categories.map((cat) => (
+                <button 
+                  key={cat}
+                  onClick={() => {
+                    setCategoryFilter(cat);
+                    fetchTasks(searchTerm, cat);
+                  }}
+                  className={cn(
+                    "px-4 py-1.5 text-xs font-bold whitespace-nowrap rounded-lg transition-all",
+                    categoryFilter === cat ? "bg-white shadow-sm border border-gray-200 text-indigo-600" : "text-gray-400 hover:text-gray-900"
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
-          <div className="flex gap-2">
-            <button className="p-2.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
-              <Search className="w-5 h-5" />
-            </button>
-            <button className="p-2.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input 
+                type="text"
+                placeholder="Поиск..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-gray-50 border-none rounded-xl py-2 pl-9 pr-4 text-xs w-48 focus:ring-2 focus:ring-indigo-100"
+              />
+            </div>
+            <button type="submit" className="p-2.5 text-indigo-600 bg-indigo-50 rounded-xl transition-all hover:bg-indigo-100">
               <Filter className="w-5 h-5" />
             </button>
-          </div>
+          </form>
         </div>
 
         <div className="divide-y divide-gray-50">
@@ -104,7 +146,7 @@ export default function Dashboard() {
               <p className="text-xs font-bold uppercase tracking-widest">Загружаем задачи...</p>
             </div>
           ) : tasks.length === 0 ? (
-            <div className="p-12 text-center text-gray-400 italic serif text-lg lowercase">Задач пока нет. Будьте первыми!</div>
+            <div className="p-12 text-center text-gray-400 serif text-lg lowercase">Задач пока нет. Будьте первыми!</div>
           ) : tasks.map((task) => (
             <motion.div 
               key={task.id}

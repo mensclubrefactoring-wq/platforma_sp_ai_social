@@ -22,11 +22,15 @@ export default function Shell({ children }: ShellProps) {
     window.dispatchEvent(new Event("auth-change"));
   };
 
+  const isAdmin = user?.role === "admin";
+  const isEntrepreneur = user?.role === "entrepreneur";
+
   const NAV_ITEMS = [
     { label: "Дашборд", path: "/app", icon: LayoutDashboard },
     { label: "AI Помощник", path: "/app/assistant", icon: Sparkles },
-    { label: "Исполнители", path: "/app/executors", icon: Users },
-    { label: "База знаний", path: "/app/knowledge", icon: BookOpen },
+    ...(isAdmin ? [{ label: "Портфолио", path: "/app/portfolios", icon: Users }] : []),
+    ...(isAdmin ? [{ label: "База знаний", path: "/app/knowledge", icon: BookOpen }] : []),
+    ...(isEntrepreneur ? [{ label: "Мое Портфолио", path: `/app/portfolios`, icon: Users }] : []),
     { label: "Настройки", path: "/app/settings", icon: Settings },
   ];
 

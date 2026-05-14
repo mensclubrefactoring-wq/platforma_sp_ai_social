@@ -11,6 +11,8 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   
@@ -23,7 +25,7 @@ export default function Auth() {
 
     try {
       const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
-      const payload = isLogin ? { email, password } : { email, password, name, role };
+      const payload = isLogin ? { email, password } : { email, password, name, role, phone, consentGiven: consent };
       
       const data = await apiFetch(endpoint, {
         method: "POST",
@@ -54,7 +56,7 @@ export default function Auth() {
           <div className="flex justify-center mb-6 text-indigo-600">
             <Sparkles className="w-10 h-10" />
           </div>
-          <h2 className="text-2xl font-bold text-center mb-2 italic serif">
+          <h2 className="text-2xl font-bold text-center mb-2 serif">
             {isLogin ? "С возвращением" : "Создать аккаунт"}
           </h2>
           <p className="text-gray-500 text-center text-sm mb-8">
@@ -113,6 +115,21 @@ export default function Auth() {
                 className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100"
               />
             </div>
+            
+            {!isLogin && (
+              <div>
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-1 block">Телефон</label>
+                <input 
+                  required
+                  type="text" 
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+7 (999) 000-00-00" 
+                  className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100"
+                />
+              </div>
+            )}
+
             <div>
               <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-1 block">Пароль</label>
               <input 
@@ -124,6 +141,21 @@ export default function Auth() {
                 className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100"
               />
             </div>
+
+            {!isLogin && (
+              <label className="flex items-start gap-3 cursor-pointer group mt-4">
+                <input 
+                  type="checkbox" 
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  required
+                  className="mt-1 accent-indigo-600"
+                />
+                <span className="text-[11px] text-gray-500 font-medium leading-relaxed">
+                  Я подтверждаю, что являюсь реальным человеком и даю согласие на обработку персональных данных.
+                </span>
+              </label>
+            )}
 
             {error && (
               <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-xl text-xs font-bold">

@@ -14,6 +14,7 @@ export default function CreateTask() {
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("Экология");
   const [isAIOptimizing, setIsAIOptimizing] = useState(false);
+  const [isClassifying, setIsClassifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const navigate = useNavigate();
@@ -28,6 +29,22 @@ export default function CreateTask() {
       console.error(err);
     } finally {
       setIsAIOptimizing(false);
+    }
+  };
+
+  const handleAutoClassify = async () => {
+    if (!description.trim()) return;
+    setIsClassifying(true);
+    try {
+      const res = await apiFetch("/api/ai/classify", {
+        method: "POST",
+        body: JSON.stringify({ description })
+      });
+      if (res.category) setCategory(res.category);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsClassifying(false);
     }
   };
 
@@ -63,7 +80,7 @@ export default function CreateTask() {
           <ArrowLeft className="w-5 h-5 text-gray-400" />
         </button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 italic serif">Новая задача</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 serif">Новая задача</h1>
           <p className="text-gray-500">Опишите проект, чтобы найти идеального социального партнера.</p>
         </div>
       </div>
@@ -122,16 +139,28 @@ export default function CreateTask() {
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-2 block flex items-center gap-2">
-                <Target className="w-3 h-3" /> Категория
-              </label>
-              <input 
-                type="text" 
+              <div className="flex items-center justify-between mb-2 px-1">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block flex items-center gap-2">
+                  <Target className="w-3 h-3" /> Категория
+                </label>
+                <button 
+                  type="button"
+                  onClick={handleAutoClassify}
+                  disabled={isClassifying || !description.trim()}
+                  className="text-[9px] font-bold text-indigo-500 hover:text-indigo-700 transition-all uppercase tracking-widest"
+                >
+                  {isClassifying ? "Классификация..." : "Определить по тексту"}
+                </button>
+              </div>
+              <select 
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                placeholder="Экология / Инклюзия" 
-                className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100"
-              />
+                className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100 appearance-none"
+              >
+                {["Экология", "Образование", "Социальное жилье", "Обучение ИТ", "Помощь пожилым", "Инклюзивность"].map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
           </div>
 

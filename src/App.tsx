@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Assistant from "./pages/Assistant";
 import Auth from "./pages/Auth";
 import CreateTask from "./pages/CreateTask";
+import Portfolios from "./pages/Portfolios";
 import Shell from "./components/layout/Shell";
 import { useEffect, useState } from "react";
 import { apiFetch } from "./lib/api";
@@ -55,10 +56,11 @@ export default function App() {
         <Route path="/app" element={user ? <Shell children={<Dashboard />} /> : <Navigate to="/auth" />} />
         <Route path="/app/assistant" element={user ? <Shell children={<Assistant />} /> : <Navigate to="/auth" />} />
         <Route path="/app/create-task" element={user ? <Shell children={<CreateTask />} /> : <Navigate to="/auth" />} />
+        <Route path="/app/portfolios" element={user && (user.role === 'admin' || user.role === 'entrepreneur') ? <Shell children={<Portfolios />} /> : <Navigate to="/auth" />} />
         
         {/* Placeholder routes */}
-        <Route path="/app/executors" element={user ? <Shell children={<div className="p-8 text-center text-gray-500 italic serif text-xl">Раздел в разработке</div>} /> : <Navigate to="/auth" />} />
-        <Route path="/app/knowledge" element={user ? <Shell children={<div className="p-8 text-center text-gray-500 italic serif text-xl">Раздел в разработке</div>} /> : <Navigate to="/auth" />} />
+        <Route path="/app/executors" element={user ? <Shell children={<div className="p-8 text-center text-gray-500 serif text-xl">Раздел перенесен в Портфолио</div>} /> : <Navigate to="/auth" />} />
+        <Route path="/app/knowledge" element={user && user.role === 'admin' ? <Shell children={<div className="p-8 text-center text-gray-500 serif text-xl">База знаний (Только для админов)</div>} /> : <Navigate to="/app" />} />
         <Route path="/app/settings" element={user ? <Shell children={<div className="p-8 text-center text-gray-500 italic serif text-xl">Раздел в разработке</div>} /> : <Navigate to="/auth" />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
