@@ -9,16 +9,17 @@ import (
 var JWT_SECRET = []byte(getEnv("JWT_SECRET", "platforma-sp-secret-key-2026"))
 
 type User struct {
-	ID           uint      `json:"id" gorm:"primaryKey"`
-	Email         string    `json:"email" gorm:"uniqueIndex"`
-	Password      string    `json:"password,omitempty"`
-	Phone         string    `json:"phone"`
-	Name          string    `json:"name"`
-	Role          string    `json:"role"` // business, entrepreneur, admin
-	ConsentGiven  bool      `json:"consentGiven"`
-	PortfolioURL  string    `json:"portfolioUrl"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID                 uint      `json:"id" gorm:"primaryKey"`
+	Email              string    `json:"email" gorm:"uniqueIndex"`
+	Password           string    `json:"password,omitempty"`
+	Phone              string    `json:"phone"`
+	RepresentativeName string    `json:"representativeName"`
+	CompanyName        string    `json:"companyName"`
+	Role               string    `json:"role"` // business, entrepreneur, admin
+	ConsentGiven       bool      `json:"consentGiven"`
+	PortfolioURL       string    `json:"portfolioUrl"`
+	CreatedAt          time.Time `json:"createdAt"`
+	UpdatedAt          time.Time `json:"updatedAt"`
 }
 
 type Task struct {

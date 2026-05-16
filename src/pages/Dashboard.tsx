@@ -57,10 +57,87 @@ export default function Dashboard() {
     fetchTasks(searchTerm, categoryFilter);
   };
 
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [proposal, setProposal] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateProposal = async (task: Task) => {
+    setSelectedTask(task);
+    setProposal("");
+    setIsGenerating(true);
+    try {
+      const res = await apiFetch("/api/ai/generate-proposal", {
+        method: "POST",
+        body: JSON.stringify(task)
+      });
+      setProposal(res.proposal);
+    } catch (err: any) {
+      setProposal("Ошибка при генерации предложения: " + err.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const categories = ["Все", "Экология", "Образование", "Социальное жилье", "Обучение ИТ", "Помощь пожилым", "Инклюзивность"];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 relative">
+      {/* Proposal Modal */}
+      {selectedTask && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+          >
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-indigo-50/30">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-indigo-600" />
+                <h3 className="font-bold text-lg text-gray-900">Предложение для бизнеса</h3>
+              </div>
+              <button 
+                onClick={() => setSelectedTask(null)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <MoreVertical className="w-5 h-5 rotate-45 text-gray-400" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-8 bg-white">
+              {isGenerating ? (
+                <div className="h-64 flex flex-col items-center justify-center gap-4 text-gray-400">
+                  <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-sm font-bold uppercase tracking-widest text-indigo-600 animate-pulse">AI формирует ваше предложение...</p>
+                </div>
+              ) : (
+                <div className="prose prose-indigo max-w-none">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Черновик предложения для {selectedTask.title}</p>
+                  <pre className="whitespace-pre-wrap font-sans text-gray-700 leading-relaxed text-sm bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    {proposal}
+                  </pre>
+                </div>
+              )}
+            </div>
+            <div className="p-6 border-t border-gray-100 flex gap-3 justify-end">
+              <button 
+                onClick={() => setSelectedTask(null)}
+                className="px-6 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                Отмена
+              </button>
+              <button 
+                disabled={isGenerating}
+                onClick={() => {
+                  navigator.clipboard.writeText(proposal);
+                  alert("Скопировано в буфер обмена!");
+                }}
+                className="bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center gap-2"
+              >
+                Копировать и закрыть
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -181,13 +258,7 @@ export default function Dashboard() {
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Функция генерации
-                    alert("Генерируем предложение...");
-                    apiFetch("/api/ai/generate-proposal", {
-                      method: "POST",
-                      body: JSON.stringify(task)
-                    }).then(res => alert("Предложение сформировано: \n\n" + res.proposal))
-                      .catch(err => alert("Ошибка: " + err.message));
+                    handleGenerateProposal(task);
                   }}
                   className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold text-xs hover:bg-indigo-100 transition-all"
                 >

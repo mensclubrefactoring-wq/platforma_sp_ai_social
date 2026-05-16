@@ -5,7 +5,8 @@ import { apiFetch } from "@/src/lib/api";
 
 interface Entrepreneur {
   id: number;
-  name: string;
+  representativeName: string;
+  companyName: string;
   email: string;
   phone: string;
   role: string;
@@ -60,8 +61,9 @@ export default function Portfolios() {
                 <User className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="font-bold text-lg text-gray-900">{e.name}</h3>
-                <div className="flex items-center gap-1.5 text-xs font-bold text-green-600 uppercase tracking-wider">
+                <h3 className="font-bold text-lg text-gray-900">{e.companyName}</h3>
+                <p className="text-xs text-gray-400 font-medium">{e.representativeName}</p>
+                <div className="flex items-center gap-1.5 text-[10px] font-bold text-green-600 uppercase tracking-widest mt-1">
                   <ShieldCheck className="w-3.5 h-3.5" /> Верифицирован
                 </div>
               </div>

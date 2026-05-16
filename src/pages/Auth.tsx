@@ -10,7 +10,8 @@ export default function Auth() {
   const [role, setRole] = useState<"business" | "entrepreneur">("business");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [representativeName, setRepresentativeName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState("");
@@ -25,7 +26,15 @@ export default function Auth() {
 
     try {
       const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
-      const payload = isLogin ? { email, password } : { email, password, name, role, phone, consentGiven: consent };
+      const payload = isLogin ? { email, password } : { 
+        email, 
+        password, 
+        representativeName, 
+        companyName, 
+        role, 
+        phone, 
+        consentGiven: consent 
+      };
       
       const data = await apiFetch(endpoint, {
         method: "POST",
@@ -92,17 +101,30 @@ export default function Auth() {
 
           <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
-              <div>
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-1 block">Название компании / ФИО</label>
-                <input 
-                  required
-                  type="text" 
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="ПАО Сбербанк / Иванов Иван" 
-                  className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100"
-                />
-              </div>
+              <>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-1 block">ФИО представителя</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={representativeName}
+                    onChange={(e) => setRepresentativeName(e.target.value)}
+                    placeholder="Иванов Иван Иванович" 
+                    className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-1 block">Название компании</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="ООО «Социальный проект»" 
+                    className="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-100"
+                  />
+                </div>
+              </>
             )}
             <div>
               <label className="text-xs font-bold text-gray-400 uppercase tracking-widest pl-1 mb-1 block">Email</label>

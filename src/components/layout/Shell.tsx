@@ -20,6 +20,7 @@ export default function Shell({ children }: ShellProps) {
     localStorage.removeItem("auth_token");
     localStorage.removeItem("user_data");
     window.dispatchEvent(new Event("auth-change"));
+    window.location.href = "/";
   };
 
   const isAdmin = user?.role === "admin";
@@ -70,11 +71,13 @@ export default function Shell({ children }: ShellProps) {
         <div className="p-4 border-t border-gray-50">
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl mb-4">
             <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold uppercase">
-              {user?.displayName?.[0] || user?.email?.[0] || "U"}
+              {user?.companyName?.[0] || user?.representativeName?.[0] || user?.email?.[0] || "U"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-gray-900 truncate">{user?.displayName || user?.email?.split('@')[0]}</p>
-              <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
+              <p className="text-xs font-bold text-gray-900 truncate">
+                {user?.companyName || user?.representativeName || user?.email?.split('@')[0]}
+              </p>
+              <p className="text-[10px] text-gray-400 truncate">{user?.representativeName || user?.email}</p>
             </div>
           </div>
           <button 

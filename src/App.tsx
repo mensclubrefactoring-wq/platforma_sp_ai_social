@@ -61,7 +61,7 @@ export default function App() {
         {/* Placeholder routes */}
         <Route path="/app/executors" element={user ? <Shell children={<div className="p-8 text-center text-gray-500 serif text-xl">Раздел перенесен в Портфолио</div>} /> : <Navigate to="/auth" />} />
         <Route path="/app/knowledge" element={user && user.role === 'admin' ? <Shell children={<div className="p-8 text-center text-gray-500 serif text-xl">База знаний (Только для админов)</div>} /> : <Navigate to="/app" />} />
-        <Route path="/app/settings" element={user ? <Shell children={<div className="p-8 text-center text-gray-500 italic serif text-xl">Раздел в разработке</div>} /> : <Navigate to="/auth" />} />
+        <Route path="/app/settings" element={user ? <Shell children={<div className="p-8 text-center text-gray-500 serif text-xl">Раздел в разработке</div>} /> : <Navigate to="/auth" />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

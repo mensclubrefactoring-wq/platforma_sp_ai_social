@@ -4,6 +4,7 @@ import { Send, Sparkles, BrainCircuit, Bot, User, Loader2, ArrowLeft, CheckCircl
 import { Link } from "react-router-dom";
 import { cn } from "@/src/lib/utils";
 import { askAI } from "@/src/services/ai";
+import { apiFetch } from "@/src/lib/api";
 
 interface Message {
   role: "assistant" | "user";
