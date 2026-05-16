@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Plus, Search, Filter, MoreVertical, Building2, MapPin, Calendar, CreditCard, ChevronRight, MessageSquareCode, Sparkles, Users, Loader2 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
@@ -23,12 +23,17 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("Все");
 
-  const fetchTasks = async (search = "", category = "Все") => {
+  const fetchTasks = async (currentUser = user, search = "", category = "Все") => {
     setLoading(true);
     try {
       const query = new URLSearchParams();
       if (search) query.append("search", search);
       if (category !== "Все") query.append("category", category);
+      
+      // Если это компания (business), показываем только её задачи
+      if (currentUser?.role === 'business') {
+        query.append("my", "true");
+      }
       
       const t = await apiFetch(`/api/tasks?${query.toString()}`);
       setTasks(t);
@@ -44,7 +49,7 @@ export default function Dashboard() {
       try {
         const u = await apiFetch("/api/auth/me");
         setUser(u);
-        fetchTasks();
+        fetchTasks(u);
       } catch (err) {
         console.error(err);
       }
@@ -54,7 +59,7 @@ export default function Dashboard() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchTasks(searchTerm, categoryFilter);
+    fetchTasks(user, searchTerm, categoryFilter);
   };
 
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -180,14 +185,14 @@ export default function Dashboard() {
       <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-indigo-50/50 overflow-hidden">
         <div className="p-8 border-b border-gray-50 flex items-center justify-between bg-white">
           <div className="flex items-center gap-6">
-            <h2 className="font-bold text-xl serif">Маркетплейс задач</h2>
+            <h2 className="font-bold text-xl serif">Мои задачи</h2>
             <div className="flex bg-gray-50 p-1.5 rounded-xl overflow-x-auto max-w-[500px] hide-scrollbar">
               {categories.map((cat) => (
                 <button 
                   key={cat}
                   onClick={() => {
                     setCategoryFilter(cat);
-                    fetchTasks(searchTerm, cat);
+                    fetchTasks(user, searchTerm, cat);
                   }}
                   className={cn(
                     "px-4 py-1.5 text-xs font-bold whitespace-nowrap rounded-lg transition-all",

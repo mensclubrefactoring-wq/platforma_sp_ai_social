@@ -2,7 +2,6 @@ package auth
 
 import (
 	"encoding/json"
-	// "fmt"  // временно закомментировать
 	"net/http"
 	"time"
 
@@ -15,6 +14,10 @@ import (
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	if db.DB == nil {
+		http.Error(w, "Database not configured. Please set DATABASE_URL.", 500)
+		return
+	}
 	var req struct {
 		Email              string `json:"email"`
 		Password           string `json:"password"`
@@ -62,6 +65,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	if db.DB == nil {
+		http.Error(w, "Database not configured. Please set DATABASE_URL.", 500)
+		return
+	}
 	var req struct{ Email, Password string }
 	json.NewDecoder(r.Body).Decode(&req)
 
@@ -90,5 +97,5 @@ func CreateToken(u shared.User) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(shared.JWT_SECRET)
+	return token.SignedString(shared.GetJWTSecret())
 }

@@ -190,13 +190,13 @@ export default function CreateTask() {
         </div>
 
         <div className="p-8 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-          <p className="text-xs text-gray-400 font-medium max-w-[200px]">Ваша задача будет опубликована в открытом доступе для всех партнеров.</p>
+          <p className="text-xs text-gray-400 font-medium max-w-[200px]">Ваша задача будет сохранена в вашем личном кабинете.</p>
           <button 
             disabled={isSubmitting}
             type="submit"
             className="flex items-center gap-2 bg-indigo-600 text-white font-bold px-8 py-4 rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 disabled:opacity-50 transition-all"
           >
-            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-4 h-4" /> Опубликовать задачу</>}
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Send className="w-4 h-4" /> Сохранить задачу</>}
           </button>
         </div>
       </form>

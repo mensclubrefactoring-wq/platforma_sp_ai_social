@@ -6,7 +6,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var JWT_SECRET = []byte(getEnv("JWT_SECRET", "platforma-sp-secret-key-2026"))
+func GetJWTSecret() []byte {
+	return []byte(getEnv("JWT_SECRET", "platforma-sp-secret-key-2026"))
+}
 
 type User struct {
 	ID                 uint      `json:"id" gorm:"primaryKey"`

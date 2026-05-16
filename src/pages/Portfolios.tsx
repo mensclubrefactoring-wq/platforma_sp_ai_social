@@ -72,7 +72,7 @@ export default function Portfolios() {
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <Briefcase className="w-4 h-4" />
-                Социальный предприниматель
+                {e.role === 'business' ? 'Крупный бизнес' : 'Социальный предприниматель'}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <MapPin className="w-4 h-4" />

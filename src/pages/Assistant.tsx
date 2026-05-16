@@ -20,6 +20,7 @@ export default function Assistant() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
+        const u = await apiFetch("/api/auth/me");
         const history = await apiFetch("/api/ai/history");
         if (history && history.length > 0) {
           setMessages(history.map((m: any) => ({
@@ -27,9 +28,13 @@ export default function Assistant() {
             content: m.content
           })));
         } else {
+          const welcome = u.role === "business" 
+            ? "Здравствуйте! Я ваш AI-ассистент. Я помогу вам сформулировать социальную задачу для бизнеса так, чтобы она была понятна социальным предпринимателям. Что вы планируете реализовать?"
+            : "Здравствуйте! Я ваш AI-ассистент. Я помогу вам подготовить качественное предложение для бизнеса и оптимизировать описание ваших социальных проектов. Какой проект вы сейчас развиваете?";
+          
           setMessages([{
             role: "assistant",
-            content: "Здравствуйте! Я ваш AI-ассистент платформы Platforma SP. Я помогу вам сформулировать социальную задачу для бизнеса так, чтобы она была понятна социальным предпринимателям. Что вы планируете реализовать?"
+            content: welcome
           }]);
         }
       } catch (err) {
