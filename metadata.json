@@ -1,6 +1,6 @@
 {
-  "name": "Platforma SP - AI Social Connector",
-  "description": "AI-powered platform connecting businesses with social entrepreneurs using NLP matching and recommendation systems.",
+  "name": "Platforma SP",
+  "description": "Платформа социального партнерства бизнеса и предпринимателей с поддержкой ИИ.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

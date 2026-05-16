@@ -10,6 +10,10 @@ import (
 )
 
 func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
+	if db.DB == nil {
+		json.NewEncoder(w).Encode([]shared.Task{})
+		return
+	}
 	var tasks []shared.Task
 	query := db.DB.Model(&shared.Task{})
 
@@ -31,6 +35,10 @@ func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	if db.DB == nil {
+		http.Error(w, "Database not configured", 500)
+		return
+	}
 	var task shared.Task
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
 		http.Error(w, err.Error(), 400)

@@ -13,6 +13,10 @@ import (
 )
 
 func AskAIHandler(w http.ResponseWriter, r *http.Request) {
+	if db.DB == nil {
+		http.Error(w, "Database not configured", 500)
+		return
+	}
 	var req struct{ Prompt string `json:"prompt"` }
 	json.NewDecoder(r.Body).Decode(&req)
 	

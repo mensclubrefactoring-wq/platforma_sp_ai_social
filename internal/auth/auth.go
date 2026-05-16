@@ -2,7 +2,7 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
+	// "fmt"  // временно закомментировать
 	"net/http"
 	"time"
 
